@@ -6,21 +6,35 @@ import threading
 import pystray
 from PIL import Image
 import os
+import whisper
+import tempfile
+
+# Carregar o modelo Whisper (você pode escolher entre 'tiny', 'base', 'small', 'medium', 'large')
+modelo_whisper = whisper.load_model("base")
 
 def transcrever_audio():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("🎙️ Ouvindo...")
         audio = recognizer.listen(source)
+    
     try:
-        texto = recognizer.recognize_google(audio, language='pt-BR')
+        # Salvar o áudio temporariamente
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_audio:
+            temp_audio.write(audio.get_wav_data())
+            temp_audio_path = temp_audio.name
+
+        # Transcrever usando Whisper
+        resultado = modelo_whisper.transcribe(temp_audio_path, language="pt")
+        texto = resultado["text"]
+        
+        # Limpar o arquivo temporário
+        os.unlink(temp_audio_path)
+        
         print("📝 Transcrição:", texto)
         return texto
-    except sr.UnknownValueError:
-        print("😕 Não entendi o que foi dito.")
-        return ""
-    except sr.RequestError:
-        print("🚫 Erro na conexão com o serviço.")
+    except Exception as e:
+        print(f"🚫 Erro na transcrição: {str(e)}")
         return ""
 
 def iniciar_transcricao():
