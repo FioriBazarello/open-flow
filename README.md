@@ -51,6 +51,7 @@ open-flow/
   - [ ] Permitir escolha de idioma
   - [ ] Permitir escolha do tamanho do modelo de transcrição
   - [ ] Permitir visualizar e gerenciar o histórico de transcrições
+  - [ ] Permitir configurar se a janela de status será exibida e escolher a posição dela na tela
 - [ ] Adicionar um modo de edição em que o usuário pode copiar um texto selecionado e modificá-lo conforme instruções dadas via áudio
 
 Esses itens estão planejados para as próximas versões e ajudarão a tornar o Open Flow ainda mais completo e personalizável.
