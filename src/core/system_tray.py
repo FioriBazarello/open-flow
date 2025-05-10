@@ -10,6 +10,7 @@ class SystemTray:
     def _create_icon(self):
         if self.icon_path and os.path.exists(self.icon_path):
             image = Image.open(self.icon_path)
+            image = image.resize((64, 64), Image.Resampling.LANCZOS)
         else:
             image = Image.new('RGB', (64, 64), 'white')
         menu = pystray.Menu(
@@ -22,4 +23,4 @@ class SystemTray:
         os._exit(0)
 
     def run(self):
-        self.icon.run() 
+        self.icon.run()

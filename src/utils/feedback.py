@@ -73,7 +73,7 @@ class FeedbackManager:
         self.state_text_y = window_height // 2
         self.state_label = self.capsule_canvas.create_text(
             self.state_text_x, self.state_text_y,
-            text='inactive', anchor='w', fill='white', font=("Arial", 10, "bold"))
+            text='Inativo', anchor='w', fill='white', font=("Arial", 10, "bold"))
 
     def update_state(self, state):
         colors = {
