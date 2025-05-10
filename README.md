@@ -39,4 +39,20 @@ open-flow/
 
 ---
 
+## Roadmap
+
+- [ ] Criar um instalador para o aplicativo (provavelmente usando o PyInstaller)
+- [ ] Adicionar a possibilidade de transcrever usando o serviço online da OpenAI
+- [ ] Adicionar a capacidade de revisão de transcrição através de um Large Language Model (LLM)
+- [ ] Implementar uma tela de configuração para o usuário:
+  - [ ] Permitir definir um prompt base para orientar como os textos serão transcritos e revisados
+  - [ ] Permitir criar e editar uma lista de palavras que devem ser transcritas/traduzidas de forma específica
+  - [ ] Permitir escolha entre modelo local ou serviço online (OpenAI) para transcrição
+  - [ ] Permitir escolha de idioma
+  - [ ] Permitir escolha do tamanho do modelo de transcrição
+  - [ ] Permitir visualizar e gerenciar o histórico de transcrições
+- [ ] Adicionar um modo de edição em que o usuário pode copiar um texto selecionado e modificá-lo conforme instruções dadas via áudio
+
+Esses itens estão planejados para as próximas versões e ajudarão a tornar o Open Flow ainda mais completo e personalizável.
+
 Desenvolvido por Fiori Bazarello.
