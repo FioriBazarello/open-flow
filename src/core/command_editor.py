@@ -41,6 +41,7 @@ class CommandEditor:
         except Exception:
             self.feedback.update_state('error')
             self.feedback.play_sound('error')
+            self.editing = False
         finally:
             if audio_file_path and os.path.exists(audio_file_path):
                 try:
@@ -78,13 +79,14 @@ Instrução de edição:
 Responda apenas com o texto editado:"""
         try:
             response = requests.post(
-                self.ollama_url,
-                json={
-                    "model": self.model,
-                    "prompt": prompt,
-                    "stream": False
-                }
-            )
+                 self.ollama_url,
+                 json={
+                     "model": self.model,
+                     "prompt": prompt,
+                     "stream": False
+                },
+                timeout=15
+             )
             if response.status_code == 200:
                 result = response.json()
                 edited_text = result.get('response', '').strip()
