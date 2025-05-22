@@ -8,13 +8,8 @@ import threading
 
 def main():
     feedback = FeedbackManager()
-    
-    # Transcriber para transcrição normal (sem callback)
     transcriber = Transcriber(feedback, Settings.MODEL_NAME)
-    
-    # Transcriber específico para o CommandEditor (com callback)
-    editor_transcriber = Transcriber(feedback, Settings.MODEL_NAME)
-    command_editor = CommandEditor(editor_transcriber, feedback)
+    command_editor = CommandEditor(feedback)
 
     def keyboard_listener():
         keyboard.add_hotkey(Settings.HOTKEY, transcriber.toggle_recording)
