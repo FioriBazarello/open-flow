@@ -19,10 +19,8 @@ class CommandEditor:
     def start_edit_mode(self):
         if self.editing: return
 
-        Clipboard.copy_hotkey()
-        self.selected_text = Clipboard.paste_from_clipboard()
+        self.selected_text = Clipboard.read_from_clipboard()
         self.editing = True
-        self.feedback.play_sound('start')
         self.feedback.update_state('recording')
         self.recorder.start()
 
@@ -106,7 +104,7 @@ Responda apenas com o texto editado:"""
         if not self.selected_text: return
 
         edited_text = self._process_with_llm(self.selected_text, transcribed_text)
-        Clipboard.copy_to_clipboard(edited_text)
+        Clipboard.add_to_clipboard(edited_text)
         Clipboard.paste_hotkey()
         self.feedback.update_state('complete')
         self.feedback.play_sound('complete')

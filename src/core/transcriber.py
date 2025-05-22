@@ -40,7 +40,7 @@ class Transcriber:
             if self.on_transcription_complete:
                 self.on_transcription_complete(transcribed_text)
             else:
-                Clipboard.copy_to_clipboard(transcribed_text)
+                Clipboard.add_to_clipboard(transcribed_text)
                 Clipboard.paste_hotkey()
 
             self.feedback.update_state('complete')

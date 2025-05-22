@@ -1,9 +1,9 @@
+import keyboard
 import pyperclip
-import pyautogui
 
 class Clipboard:
     @staticmethod
-    def copy_to_clipboard(text):
+    def add_to_clipboard(text):
         """
         Copia o texto fornecido para a área de transferência do sistema operacional.
         Não interage com nenhuma janela ou campo de texto, apenas atualiza o clipboard.
@@ -11,7 +11,7 @@ class Clipboard:
         pyperclip.copy(text)
 
     @staticmethod
-    def paste_from_clipboard():
+    def read_from_clipboard():
         """
         Retorna o conteúdo atual da área de transferência como string.
         Não cola em nenhum campo de texto, apenas lê o clipboard para uso interno no Python.
@@ -25,7 +25,7 @@ class Clipboard:
         no campo de texto que estiver com o foco do cursor no sistema operacional.
         Não retorna nada para o Python, apenas executa a ação no sistema.
         """
-        pyautogui.hotkey('ctrl', 'v')
+        keyboard.press_and_release('ctrl+v')
 
     @staticmethod
     def copy_hotkey():
@@ -34,4 +34,4 @@ class Clipboard:
         no campo de texto ativo do sistema operacional para o clipboard.
         Não retorna nada para o Python, apenas executa a ação no sistema.
         """
-        pyautogui.hotkey('ctrl', 'c') 
+        keyboard.press_and_release('ctrl+c')
