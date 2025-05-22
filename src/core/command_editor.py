@@ -1,71 +1,61 @@
-import pyperclip
-import pyautogui
-import keyboard
 import requests
-import json
 import threading
-from src.core.transcriber import Transcriber
 from src.utils.feedback import FeedbackManager
-import time
+from src.utils.record import Record
+from src.utils.speech_to_text import SpeechToText
+from src.utils.clipboard import Clipboard
+import os
 
 class CommandEditor:
-    def __init__(self, transcriber: Transcriber, feedback: FeedbackManager):
-        self.transcriber = transcriber
+    def __init__(self, feedback: FeedbackManager):
         self.feedback = feedback
         self.editing = False
         self.selected_text = None
         self.ollama_url = "http://localhost:11434/api/generate"
         self.model = "phi4:latest"
-        
-        # Configura o callback do Transcriber
-        self.transcriber.on_transcription_complete = self._handle_transcription
-        print("🔧 CommandEditor inicializado")
+        self.recorder = Record()
+        self.speech_to_text = SpeechToText()
 
     def start_edit_mode(self):
-        """Inicia o modo de edição, capturando o texto selecionado"""
-        if self.editing:
-            print("⚠️ Modo de edição já está ativo")
-            return
+        if self.editing: return
 
-        print("📝 Iniciando modo de edição...")
-        
-        # Limpa a área de transferência antes de copiar
-        # pyperclip.copy('')
-        
-        # Simula o Ctrl+C de forma mais confiável
-        keyboard.press('ctrl')
-        keyboard.press('c')
-        keyboard.release('c')
-        keyboard.release('ctrl')
-        
-        # Pequeno delay para garantir que o texto foi copiado
-        time.sleep(0.2)  # Aumentei o delay para dar mais tempo
-        
-        self.selected_text = pyperclip.paste()
-        
-        print(f"📋 Texto selecionado: {self.selected_text}")
-        
-        if not self.selected_text:
-            print("❌ Nenhum texto selecionado!")
+        Clipboard.copy_hotkey()
+        self.selected_text = Clipboard.paste_from_clipboard()
+        self.editing = True
+        self.feedback.play_sound('start')
+        self.feedback.update_state('recording')
+        self.recorder.start()
+
+    def stop_edit_mode(self):
+        if not self.editing: return
+
+        self.feedback.update_state('processing')
+        audio_file_path = self.recorder.stop()
+        if not audio_file_path or not os.path.exists(audio_file_path):
+            self.feedback.update_state('inactive')
+            self.editing = False
+            return
+        try:
+            transcribed_text = self.speech_to_text.transcribe(audio_file_path, language="pt")
+            self._handle_transcription(transcribed_text)
+        except Exception:
             self.feedback.update_state('error')
             self.feedback.play_sound('error')
-            return
+        finally:
+            if audio_file_path and os.path.exists(audio_file_path):
+                try:
+                    os.unlink(audio_file_path)
+                except PermissionError:
+                    pass
+            threading.Timer(1.5, lambda: self.feedback.update_state('inactive')).start()
 
-        self.editing = True
-        print(f"✅ Modo de edição ativado: {self.editing}")
-        self.feedback.update_state('editing')
-        self.feedback.play_sound('start')
-        
-        # Inicia a gravação do comando
-        print("🎙️ Iniciando gravação do comando...")
-        self.transcriber.start_recording()
+    def toggle_edit_mode(self):
+        if self.editing:
+            self.stop_edit_mode()
+        else:
+            self.start_edit_mode()
 
     def _process_with_llm(self, original_text: str, instruction: str) -> str:
-        """Processa o texto usando o Ollama LLM"""
-        print(f"🤖 Processando com LLM...")
-        print(f"📝 Texto original: {original_text}")
-        print(f"📝 Instrução: {instruction}")
-        
         prompt = f"""Você é um assistente de edição de texto. Sua tarefa é editar o texto fornecido de acordo com a instrução.
 
 REGRAS IMPORTANTES:
@@ -86,9 +76,7 @@ Instrução de edição:
 {instruction}
 
 Responda apenas com o texto editado:"""
-
         try:
-            print(f"🌐 Enviando requisição para Ollama...")
             response = requests.post(
                 self.ollama_url,
                 json={
@@ -97,78 +85,29 @@ Responda apenas com o texto editado:"""
                     "stream": False
                 }
             )
-            
             if response.status_code == 200:
                 result = response.json()
                 edited_text = result.get('response', '').strip()
-                # Remove possíveis aspas ou formatação adicional
                 edited_text = edited_text.strip('"\'')
-                print(f"✅ Texto editado recebido: {edited_text}")
                 return edited_text
             else:
-                print(f"❌ Erro na requisição: {response.status_code}")
-                print(f"Resposta: {response.text}")
                 self.feedback.update_state('error')
                 self.feedback.play_sound('error')
                 return original_text
-                
-        except Exception as e:
-            print(f"❌ Erro ao processar com LLM: {str(e)}")
+        except Exception:
             self.feedback.update_state('error')
             self.feedback.play_sound('error')
             return original_text
 
     def _handle_transcription(self, transcribed_text: str):
-        """Callback chamado quando a transcrição está pronta"""
-        print(f"🎯 Callback de transcrição recebido: {transcribed_text}")
-        print(f"📊 Estado de edição: {self.editing}")
-        print(f"📊 Texto selecionado existe: {self.selected_text is not None}")
-        
-        if not self.editing:
-            print("⚠️ Callback recebido mas modo de edição não está ativo!")
-            return
-            
-        if not self.selected_text:
-            print("⚠️ Callback recebido mas não há texto selecionado!")
-            return
+        if not self.editing: return
+        if not self.selected_text: return
 
-        print("🔄 Iniciando processamento do texto...")
-        edited_text = self._process_with_llm(
-            self.selected_text, 
-            transcribed_text
-        )
-        
-        print("📋 Colando texto editado...")
-        # Cola o texto editado
-        pyperclip.copy(edited_text)
-        pyautogui.hotkey('ctrl', 'v')
-        
+        edited_text = self._process_with_llm(self.selected_text, transcribed_text)
+        Clipboard.copy_to_clipboard(edited_text)
+        Clipboard.paste_hotkey()
         self.feedback.update_state('complete')
         self.feedback.play_sound('complete')
-        
-        # Limpa as variáveis
         self.selected_text = None
         self.editing = False
-        print("✨ Processo de edição concluído")
-        
-        # Volta para inativo depois de um tempo
-        threading.Timer(1.5, lambda: self.feedback.update_state('inactive')).start()
-
-    def stop_edit_mode(self):
-        """Para o modo de edição e processa o comando"""
-        if not self.editing:
-            print("⚠️ Tentativa de parar modo de edição quando não está ativo")
-            return
-
-        print("⏹️ Parando modo de edição...")
-        # Não alteramos self.editing aqui, pois precisamos dele no callback
-        self.transcriber.stop_recording()
-        self.feedback.update_state('processing')
-
-    def toggle_edit_mode(self):
-        """Alterna entre iniciar e parar o modo de edição"""
-        print(f"🔄 Alternando modo de edição. Estado atual: {self.editing}")
-        if self.editing:
-            self.stop_edit_mode()
-        else:
-            self.start_edit_mode() 
+        threading.Timer(1.5, lambda: self.feedback.update_state('inactive')).start() 
