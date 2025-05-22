@@ -10,10 +10,10 @@ def main():
     feedback = FeedbackManager()
     
     # Transcriber para transcrição normal (sem callback)
-    transcriber = Transcriber(Settings.MODEL_NAME, feedback)
+    transcriber = Transcriber(feedback, Settings.MODEL_NAME)
     
     # Transcriber específico para o CommandEditor (com callback)
-    editor_transcriber = Transcriber(Settings.MODEL_NAME, feedback)
+    editor_transcriber = Transcriber(feedback, Settings.MODEL_NAME)
     command_editor = CommandEditor(editor_transcriber, feedback)
 
     def keyboard_listener():

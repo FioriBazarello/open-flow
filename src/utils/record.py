@@ -9,7 +9,7 @@ class Record:
         self.rate = rate
         self.chunk = chunk
         self.format = format
-        self.audio = pyaudio.PyAudio()
+        self.audio = None
         self.stream = None
         self.frames = []
         self.recording = False
@@ -18,6 +18,7 @@ class Record:
     def start(self):
         if not self.recording:
             self.frames = []
+            self.audio = pyaudio.PyAudio()
             self.stream = self.audio.open(
                 format=self.format,
                 channels=self.channels,
@@ -35,27 +36,23 @@ class Record:
     def stop(self, output_path=None):
         if self.recording:
             self.recording = False
-
             if self._thread:
                 self._thread.join()
-
             if self.stream:
                 self.stream.stop_stream()
                 self.stream.close()
-
+            if self.audio:
+                self.audio.terminate()
+                self.audio = None
             if output_path is None:
                 temp_file = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
                 output_path = temp_file.name
                 temp_file.close()
-
-            self.audio.terminate()
-
             with wave.open(output_path, 'wb') as wf:
                 wf.setnchannels(self.channels)
-                wf.setsampwidth(self.audio.get_sample_size(self.format))
+                wf.setsampwidth(pyaudio.PyAudio().get_sample_size(self.format))
                 wf.setframerate(self.rate)
                 wf.writeframes(b''.join(self.frames))
-            
             return output_path
         return None
 
