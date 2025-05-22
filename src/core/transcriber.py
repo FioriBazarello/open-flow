@@ -7,15 +7,12 @@ from src.utils.speech_to_text import SpeechToText
 from src.utils.clipboard import Clipboard
 
 class Transcriber:
-    def __init__(self, model_name="medium", feedback: FeedbackManager | None = None, on_transcription_complete: Callable | None = None):
+    def __init__(self, feedback: FeedbackManager, model_name="medium", on_transcription_complete: Callable | None = None):
         self.speech_to_text = SpeechToText(model_name)
         self.recorder = Record()
         self.feedback: FeedbackManager = feedback
         self.recording = False
         self.on_transcription_complete = on_transcription_complete
-    
-        if feedback is None:
-            raise ValueError('FeedbackManager deve ser passado para Transcriber')
 
     def start_recording(self):
         if self.recording: return
