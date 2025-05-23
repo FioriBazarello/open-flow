@@ -56,7 +56,7 @@ class Editor:
 
     def _process_with_llm(self, original_text: str, instruction: str) -> str:
         prompt = self.prompt_manager.get_filled_prompt(
-            'command_editor',
+            'editor',
             original_text=original_text,
             instruction=instruction
         )
