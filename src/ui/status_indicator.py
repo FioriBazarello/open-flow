@@ -5,7 +5,7 @@ import sys
 if sys.platform == 'win32':
     import winsound
 
-class FeedbackManager:
+class StatusIndicator:
     def __init__(self):
         self.root = tk.Tk()
         self._setup_window()
@@ -88,17 +88,26 @@ class FeedbackManager:
             'processing': 'Processando...',
             'complete': 'Concluído!'
         }
+        sounds = {
+            'inactive': None,
+            'recording': 'start',
+            'processing': None,
+            'complete': 'complete'
+        }
         if state in colors:
             def update():
                 self.capsule_canvas.itemconfig(self.indicator, fill=colors[state])
                 self.capsule_canvas.itemconfig(self.state_label, text=labels[state])
                 self.state = state
+                sound_type = sounds[state]
+                if sound_type:
+                    self._play_sound(sound_type)
             if threading.current_thread() is threading.main_thread():
                 update()
             else:
                 self.root.after(0, update)
 
-    def play_sound(self, sound_type):
+    def _play_sound(self, sound_type):
         if sys.platform == 'win32':
             if sound_type == 'start':
                 winsound.Beep(800, 120)  # frequência, duração em ms

@@ -1,13 +1,13 @@
 import keyboard
 from src.core.transcriber import Transcriber
 from src.core.command_editor import CommandEditor
-from src.core.system_tray import SystemTray
+from src.ui.system_tray import SystemTray
 from src.config.settings import Settings
-from src.utils.feedback import FeedbackManager
+from src.ui.status_indicator import StatusIndicator
 import threading
 
 def main():
-    feedback = FeedbackManager()
+    feedback = StatusIndicator()
     transcriber = Transcriber(feedback, Settings.MODEL_NAME)
     command_editor = CommandEditor(feedback)
 

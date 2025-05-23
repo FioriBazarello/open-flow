@@ -1,16 +1,16 @@
 import os
 import threading
 from typing import Callable
-from src.utils.feedback import FeedbackManager
+from src.ui.status_indicator import StatusIndicator
 from src.utils.record import Record
 from src.utils.speech_to_text import SpeechToText
 from src.utils.clipboard import Clipboard
 
 class Transcriber:
-    def __init__(self, feedback: FeedbackManager, model_name="medium", on_transcription_complete: Callable | None = None):
+    def __init__(self, status_indicator: StatusIndicator, model_name="medium", on_transcription_complete: Callable | None = None):
         self.speech_to_text = SpeechToText(model_name)
         self.recorder = Record()
-        self.feedback: FeedbackManager = feedback
+        self.status_indicator: StatusIndicator = status_indicator
         self.recording = False
         self.on_transcription_complete = on_transcription_complete
 
@@ -18,20 +18,18 @@ class Transcriber:
         if self.recording: return
 
         self.recording = True
-        self.feedback.update_state('recording')
-        self.feedback.play_sound('start')
+        self.status_indicator.update_state('recording')
         self.recorder.start()
 
     def stop_recording(self):
         if not self.recording: return
 
         self.recording = False
-        self.feedback.update_state('processing')
-        self.feedback.play_sound('stop')
+        self.status_indicator.update_state('processing')
         audio_file_path = self.recorder.stop()
 
         if not audio_file_path or not os.path.exists(audio_file_path):
-            self.feedback.update_state('inactive')
+            self.status_indicator.update_state('inactive')
             return
 
         try:
@@ -43,12 +41,10 @@ class Transcriber:
                 Clipboard.add_to_clipboard(transcribed_text)
                 Clipboard.paste_hotkey()
 
-            self.feedback.update_state('complete')
-            self.feedback.play_sound('complete')
+            self.status_indicator.update_state('complete')
 
         except Exception:
-            self.feedback.update_state('error')
-            self.feedback.play_sound('error')
+            self.status_indicator.update_state('error')
 
         finally:
             if audio_file_path and os.path.exists(audio_file_path):
@@ -57,7 +53,7 @@ class Transcriber:
                 except PermissionError:
                     pass
 
-            threading.Timer(1.5, lambda: self.feedback.update_state('inactive')).start()
+            threading.Timer(1.5, lambda: self.status_indicator.update_state('inactive')).start()
 
     def toggle_recording(self):
         self.stop_recording() if self.recording else self.start_recording()
