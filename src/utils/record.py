@@ -14,6 +14,7 @@ class Record:
         self.frames = []
         self.recording = False
         self._thread = None
+        self.sample_width = pyaudio.PyAudio().get_sample_size(self.format)
 
     def start(self):
         if not self.recording:
@@ -50,7 +51,7 @@ class Record:
                 temp_file.close()
             with wave.open(output_path, 'wb') as wf:
                 wf.setnchannels(self.channels)
-                wf.setsampwidth(pyaudio.PyAudio().get_sample_size(self.format))
+                wf.setsampwidth(self.sample_width)
                 wf.setframerate(self.rate)
                 wf.writeframes(b''.join(self.frames))
             return output_path
@@ -65,5 +66,9 @@ class Record:
 
     def _record_audio(self):
         while self.recording:
-            data = self.stream.read(self.chunk)
-            self.frames.append(data) 
+            try:
+                data = self.stream.read(self.chunk, exception_on_overflow=False)
+                self.frames.append(data)
+            except Exception as e:
+                self.recording = False
+                break
