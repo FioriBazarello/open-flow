@@ -10,6 +10,7 @@ class StatusIndicator:
         self.root = tk.Tk()
         self._setup_window()
         self.state = 'inactive'
+        self.root.withdraw()  # Garante que inicia oculto
 
     def _setup_window(self):
         self.root.overrideredirect(True)  # Remove barra de título
@@ -96,8 +97,12 @@ class StatusIndicator:
         }
         if state in colors:
             def update():
-                self.capsule_canvas.itemconfig(self.indicator, fill=colors[state])
-                self.capsule_canvas.itemconfig(self.state_label, text=labels[state])
+                if state == 'inactive':
+                    self.root.withdraw()  # Esconde a janela
+                else:
+                    self.root.deiconify()  # Mostra a janela
+                    self.capsule_canvas.itemconfig(self.indicator, fill=colors[state])
+                    self.capsule_canvas.itemconfig(self.state_label, text=labels[state])
                 self.state = state
                 sound_type = sounds[state]
                 if sound_type:
