@@ -1,20 +1,21 @@
-import requests
+import os
 import threading
 from src.ui.status_indicator import StatusIndicator
 from src.utils.record import Record
 from src.utils.speech_to_text import SpeechToText
 from src.utils.clipboard import Clipboard
-import os
+from src.utils.ollama_client import OllamaClient
+from src.utils.prompt_manager import PromptManager
 
-class CommandEditor:
+class Editor:
     def __init__(self, status_indicator: StatusIndicator):
         self.status_indicator = status_indicator
         self.editing = False
         self.selected_text = None
-        self.ollama_url = "http://localhost:11434/api/generate"
-        self.model = "phi4:latest"
+        self.ollama_client = OllamaClient()
         self.recorder = Record()
         self.speech_to_text = SpeechToText()
+        self.prompt_manager = PromptManager()
 
     def start_edit_mode(self):
         if self.editing: return
@@ -54,40 +55,14 @@ class CommandEditor:
             self.start_edit_mode()
 
     def _process_with_llm(self, original_text: str, instruction: str) -> str:
-        prompt = f"""Você é um assistente de edição de texto. Sua tarefa é editar o texto fornecido de acordo com a instrução.
-
-REGRAS IMPORTANTES:
-1. Mantenha TODO o conteúdo e significado original do texto, a menos que a instrução especifique explicitamente para adicionar ou remover informações.
-2. Você deve focar apenas em ajustes de:
-   - Pontuação
-   - Formato
-   - Linguagem
-   - Estrutura
-   - Idioma
-3. Responda APENAS com o texto editado, sem aspas, sem formatação adicional, sem explicações.
-4. NÃO inclua palavras como "Texto editado:" ou qualquer outro texto além do resultado da edição.
-
-Texto original:
-{original_text}
-
-Instrução de edição:
-{instruction}
-
-Responda apenas com o texto editado:"""
+        prompt = self.prompt_manager.get_filled_prompt(
+            'command_editor',
+            original_text=original_text,
+            instruction=instruction
+        )
         try:
-            response = requests.post(
-                 self.ollama_url,
-                 json={
-                     "model": self.model,
-                     "prompt": prompt,
-                     "stream": False
-                },
-                timeout=15
-             )
-            if response.status_code == 200:
-                result = response.json()
-                edited_text = result.get('response', '').strip()
-                edited_text = edited_text.strip('"\'')
+            edited_text = self.ollama_client.generate(prompt)
+            if edited_text is not None:
                 return edited_text
             else:
                 self.status_indicator.update_state('error')

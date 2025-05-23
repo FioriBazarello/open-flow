@@ -91,7 +91,7 @@ class StatusIndicator:
         sounds = {
             'inactive': None,
             'recording': 'start',
-            'processing': None,
+            'processing': 'start',
             'complete': 'complete'
         }
         if state in colors:

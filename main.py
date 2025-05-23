@@ -1,6 +1,6 @@
 import keyboard
 from src.core.transcriber import Transcriber
-from src.core.command_editor import CommandEditor
+from src.core.editor import Editor
 from src.ui.system_tray import SystemTray
 from src.config.settings import Settings
 from src.ui.status_indicator import StatusIndicator
@@ -9,7 +9,7 @@ import threading
 def main():
     feedback = StatusIndicator()
     transcriber = Transcriber(feedback, Settings.MODEL_NAME)
-    command_editor = CommandEditor(feedback)
+    command_editor = Editor(feedback)
 
     def keyboard_listener():
         keyboard.add_hotkey(Settings.HOTKEY, transcriber.toggle_recording)
