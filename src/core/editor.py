@@ -131,10 +131,10 @@ class Editor:
         print("🔄 INICIANDO PROCESSO DE EDIÇÃO...")
         edited_text = self._process_with_llm(self.selected_text, transcribed_text)
         
-        print("=" * 60)
+        print("=" * 50)
         print("📝 RESULTADO FINAL DA EDIÇÃO:")
         print(f"'{edited_text}'")
-        print("=" * 60)
+        print("=" * 50)
         
         print("📋 Copiando texto editado para área de transferência...")
         Clipboard.add_to_clipboard(edited_text)

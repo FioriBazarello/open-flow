@@ -47,10 +47,10 @@ class Transcriber:
             print("🧠 Enviando áudio para o modelo de IA...")
             transcribed_text = self.speech_to_text.transcribe(audio_file_path, language="pt")
             
-            print("=" * 60)
+            print("=" * 50)
             print("📝 TEXTO TRANSCRITO:")
             print(f"'{transcribed_text}'")
-            print("=" * 60)
+            print("=" * 50)
 
             if self.on_transcription_complete:
                 print("🔗 Enviando texto transcrito para callback personalizado")
