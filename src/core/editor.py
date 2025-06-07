@@ -26,6 +26,10 @@ class Editor:
         print("\n" + "="*60)
         print("✏️  INICIANDO MODO DE EDIÇÃO...")
         self.selected_text = Clipboard.read_from_clipboard()
+        if not self.selected_text:
+            print("⚠️  Nenhum texto copiado/selecionado. Abortando modo de edição")
+            self.status_indicator.update_state('inactive')
+            return
         
         print("📋 TEXTO SELECIONADO CAPTURADO:")
         print(f"'{self.selected_text}'")
@@ -105,11 +109,13 @@ class Editor:
             else:
                 print("❌ IA retornou resposta vazia - mantendo texto original")
                 self.status_indicator.update_state('error')
+                self.editing = False
                 return original_text
         except Exception as e:
             print(f"❌ ERRO NA COMUNICAÇÃO COM IA: {str(e)}")
             print("🔄 Mantendo texto original devido ao erro")
             self.status_indicator.update_state('error')
+            self.editing = False
             return original_text
 
     def _handle_transcription(self, transcribed_text: str):
@@ -118,6 +124,8 @@ class Editor:
             return
         if not self.selected_text: 
             print("⚠️  Nenhum texto selecionado - ignorando transcrição")
+            self.status_indicator.update_state('inactive')
+            self.editing = False
             return
 
         print("🔄 INICIANDO PROCESSO DE EDIÇÃO...")

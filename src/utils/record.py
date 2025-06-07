@@ -14,7 +14,9 @@ class Record:
         self.frames = []
         self.recording = False
         self._thread = None
-        self.sample_width = pyaudio.PyAudio().get_sample_size(self.format)
+        temp_audio = pyaudio.PyAudio()
+        self.sample_width = temp_audio.get_sample_size(self.format)
+        temp_audio.terminate()
 
     def start(self):
         if not self.recording:

@@ -1,6 +1,7 @@
 import pystray
 from PIL import Image
 import os
+import sys
 
 class SystemTray:
     def __init__(self, icon_path=None):
@@ -20,7 +21,7 @@ class SystemTray:
 
     def _on_exit(self, icon, item):
         icon.stop()
-        os._exit(0)
+        sys.exit(0)
 
     def run(self):
         self.icon.run()
