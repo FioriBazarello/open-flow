@@ -14,21 +14,21 @@ def main():
     feedback = StatusIndicator()
     
     print("🎤 Carregando transcriber...")
-    transcriber = Transcriber(feedback, Settings.MODEL_NAME)
+    transcriber = Transcriber(feedback, Settings.get_model_name())
     
     print("✏️  Carregando editor...")
     command_editor = Editor(feedback)
 
     def keyboard_listener():
         print("⌨️  Configurando atalhos de teclado...")
-        keyboard.add_hotkey(Settings.HOTKEY, transcriber.toggle_recording)
-        keyboard.add_hotkey(Settings.EDIT_HOTKEY, command_editor.toggle_edit_mode)
+        keyboard.add_hotkey(Settings.get_hotkey(), transcriber.toggle_recording)
+        keyboard.add_hotkey(Settings.get_edit_hotkey(), command_editor.toggle_edit_mode)
         
         print("=" * 50)
         print("✅ SISTEMA PRONTO!")
-        print(f'🎤 Pressione {Settings.HOTKEY} para iniciar a gravação.')
-        print(f'🎤 Pressione {Settings.HOTKEY} novamente para parar a gravação e transcrever.')
-        print(f'✏️  Pressione {Settings.EDIT_HOTKEY} para editar texto selecionado.')
+        print(f'🎤 Pressione {Settings.get_hotkey()} para iniciar a gravação.')
+        print(f'🎤 Pressione {Settings.get_hotkey()} novamente para parar a gravação e transcrever.')
+        print(f'✏️  Pressione {Settings.get_edit_hotkey()} para editar texto selecionado.')
         print("📌 O programa está rodando em background. Clique com o botão direito no ícone para sair.")
         print("=" * 50)
         

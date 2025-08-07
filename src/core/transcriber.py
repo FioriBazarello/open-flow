@@ -5,6 +5,7 @@ from src.ui.status_indicator import StatusIndicator
 from src.utils.record import Record
 from src.utils.speech_to_text import SpeechToText
 from src.utils.clipboard import Clipboard
+from src.config.settings import Settings
 
 class Transcriber:
     def __init__(self, status_indicator: StatusIndicator, model_name="medium", on_transcription_complete: Callable | None = None):
@@ -45,7 +46,7 @@ class Transcriber:
         try:
             print("🔄 PROCESSANDO TRANSCRIÇÃO...")
             print("🧠 Enviando áudio para o modelo de IA...")
-            transcribed_text = self.speech_to_text.transcribe(audio_file_path, language="pt")
+            transcribed_text = self.speech_to_text.transcribe(audio_file_path, language=Settings.get_language())
             
             print("=" * 50)
             print("📝 TEXTO TRANSCRITO:")
