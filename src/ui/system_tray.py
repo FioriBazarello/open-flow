@@ -38,8 +38,16 @@ class SystemTray:
                 pass
 
     def _on_exit(self, icon, item):
+        # Para encerrar sem exceptions no handler do pystray, não chame sys.exit aqui.
+        # Pare o tray e peça para o Tk encerrar o mainloop na thread principal.
         icon.stop()
-        sys.exit(0)
+        if self.tk_root is not None:
+            try:
+                self.tk_root.after(0, self.tk_root.quit)
+            except Exception:
+                # Como fallback extremo (não esperado neste app), evita levantar SystemExit aqui
+                # para não quebrar o handler do pystray.
+                pass
 
     def run(self):
         self.icon.run()
