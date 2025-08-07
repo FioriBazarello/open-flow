@@ -2,11 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 
 from src.config.options import MODEL_CHOICES, LANGUAGE_CHOICES, values, description_for
+from src.ui.components import LabeledCombobox, FormSection
 
 
-class TranscriptionSection:
+class TranscriptionSection(FormSection):
     def __init__(self, parent: tk.Misc):
-        self.frame = ttk.LabelFrame(parent, text="Configurações de Transcrição", padding="15")
+        super().__init__(parent, title="Configurações de Transcrição", padding="15")
         self.model_var = tk.StringVar()
         self.language_var = tk.StringVar()
         self._model_desc_label: ttk.Label | None = None
@@ -14,32 +15,28 @@ class TranscriptionSection:
         self._build()
 
     def _build(self) -> None:
-        self.frame.columnconfigure(1, weight=1)
+        self.frame.columnconfigure(0, weight=1)
 
-        ttk.Label(self.frame, text="Modelo:", font=("Arial", 10, "bold")).grid(row=0, column=0, sticky="w", pady=5)
-        model_combo = ttk.Combobox(
+        model_field = LabeledCombobox(
             self.frame,
-            textvariable=self.model_var,
+            label_text="Modelo:",
             values=values(MODEL_CHOICES),
-            state="readonly",
+            variable=self.model_var,
             width=20,
-            font=("Arial", 10),
         )
-        model_combo.grid(row=0, column=1, sticky="w", padx=(15, 0), pady=5)
+        model_field.grid(row=0, column=0, sticky="ew")
 
         self._model_desc_label = ttk.Label(self.frame, text="", font=("Arial", 9), foreground="blue")
         self._model_desc_label.grid(row=0, column=2, sticky="w", padx=(10, 0), pady=5)
 
-        ttk.Label(self.frame, text="Idioma:", font=("Arial", 10, "bold")).grid(row=1, column=0, sticky="w", pady=5)
-        language_combo = ttk.Combobox(
+        language_field = LabeledCombobox(
             self.frame,
-            textvariable=self.language_var,
+            label_text="Idioma:",
             values=values(LANGUAGE_CHOICES),
-            state="readonly",
+            variable=self.language_var,
             width=20,
-            font=("Arial", 10),
         )
-        language_combo.grid(row=1, column=1, sticky="w", padx=(15, 0), pady=5)
+        language_field.grid(row=1, column=0, sticky="ew")
 
         self._language_desc_label = ttk.Label(self.frame, text="", font=("Arial", 9), foreground="blue")
         self._language_desc_label.grid(row=1, column=2, sticky="w", padx=(10, 0), pady=5)

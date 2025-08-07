@@ -4,6 +4,7 @@ from tkinter import ttk
 from src.config.settings import Settings
 from src.ui.sections.transcription_section import TranscriptionSection
 from src.ui.sections.general_section import GeneralSection
+from src.ui.components import StatusBar
 
 
 class ConfigWindow:
@@ -11,7 +12,7 @@ class ConfigWindow:
         self._master = master
         self._hidden_root: tk.Tk | None = None
         self._window: tk.Toplevel | None = None
-        self._status_label: ttk.Label | None = None
+        self._status_bar: StatusBar | None = None
         self._transcription_section: TranscriptionSection | None = None
         self._general_section: GeneralSection | None = None
 
@@ -73,8 +74,8 @@ class ConfigWindow:
         ttk.Button(button_frame, text="Salvar Configurações", command=self._save).pack(side=tk.LEFT, padx=(0, 10))
         ttk.Button(button_frame, text="Cancelar", command=self._on_close).pack(side=tk.LEFT)
 
-        self._status_label = ttk.Label(main_frame, text="Pronto", relief=tk.SUNKEN, anchor=tk.W, font=("Arial", 9))
-        self._status_label.grid(row=4, column=0, sticky="ew", pady=(15, 0))
+        self._status_bar = StatusBar(main_frame)
+        self._status_bar.grid(row=4, column=0, sticky="ew", pady=(15, 0))
 
     def _load(self) -> None:
         if self._transcription_section is not None:
@@ -101,8 +102,8 @@ class ConfigWindow:
         self._on_close()
 
     def _status(self, message: str) -> None:
-        if self._status_label is not None:
-            self._status_label.config(text=message)
+        if self._status_bar is not None:
+            self._status_bar.set(message)
 
     def _on_close(self) -> None:
         if self._window is not None:
