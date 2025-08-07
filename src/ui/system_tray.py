@@ -2,10 +2,12 @@ import pystray
 from PIL import Image
 import os
 import sys
+from .config_window import ConfigWindow
 
 class SystemTray:
     def __init__(self, icon_path=None):
         self.icon_path = icon_path
+        self.config_window = ConfigWindow()
         self.icon = self._create_icon()
 
     def _create_icon(self):
@@ -15,9 +17,15 @@ class SystemTray:
         else:
             image = Image.new('RGB', (64, 64), 'white')
         menu = pystray.Menu(
+            pystray.MenuItem('Configurações', self._on_config, default=True),
             pystray.MenuItem('Sair', self._on_exit)
         )
-        return pystray.Icon("open-flow", image, "Open Flow", menu)
+        icon = pystray.Icon("open-flow", image, "Open Flow", menu)
+        return icon
+
+    def _on_config(self, icon, item):
+        """Abre a janela de configurações"""
+        self.config_window.create_window()
 
     def _on_exit(self, icon, item):
         icon.stop()
