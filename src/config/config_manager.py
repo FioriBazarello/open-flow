@@ -13,6 +13,7 @@ class ConfigManager:
         self.default_config = {
             "model_name": "medium",
             "language": "pt",
+            "ollama_base_url": "http://localhost:11434",
             "hotkey": "ctrl+alt",
             "edit_hotkey": "ctrl+windows"
         }
@@ -91,6 +92,10 @@ class ConfigManager:
         """Obtém o atalho de teclado para edição"""
         return self.get("edit_hotkey", "ctrl+windows")
     
+    def get_ollama_base_url(self) -> str:
+        """Obtém a URL base do servidor Ollama"""
+        return self.get("ollama_base_url", "http://localhost:11434")
+    
     def set_model_name(self, model_name: str) -> bool:
         """Define o nome do modelo de transcrição"""
         return self.set("model_name", model_name)
@@ -106,6 +111,10 @@ class ConfigManager:
     def set_edit_hotkey(self, edit_hotkey: str) -> bool:
         """Define o atalho de teclado para edição"""
         return self.set("edit_hotkey", edit_hotkey)
+    
+    def set_ollama_base_url(self, url: str) -> bool:
+        """Define a URL base do servidor Ollama"""
+        return self.set("ollama_base_url", url)
     
     def get_all_config(self) -> Dict[str, Any]:
         """Obtém todas as configurações"""

@@ -2,12 +2,14 @@ import pystray
 from PIL import Image
 import os
 import sys
+import tkinter as tk
 from .config_window import ConfigWindow
 
 class SystemTray:
-    def __init__(self, icon_path=None):
+    def __init__(self, icon_path=None, tk_root: tk.Tk | None = None):
         self.icon_path = icon_path
-        self.config_window = ConfigWindow()
+        self.tk_root = tk_root
+        self.config_window = ConfigWindow(master=self.tk_root)
         self.icon = self._create_icon()
 
     def _create_icon(self):
@@ -25,7 +27,15 @@ class SystemTray:
 
     def _on_config(self, icon, item):
         """Abre a janela de configurações"""
-        self.config_window.create_window()
+        # Garante que a UI seja manipulada na thread principal do Tk
+        if self.tk_root is not None:
+            self.tk_root.after(0, self.config_window.show)
+        else:
+            # Fallback: tenta abrir diretamente (pode falhar se não estiver na main thread)
+            try:
+                self.config_window.show()
+            except Exception:
+                pass
 
     def _on_exit(self, icon, item):
         icon.stop()

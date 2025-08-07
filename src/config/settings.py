@@ -16,6 +16,11 @@ class Settings:
         return cls._config_manager.get_language()
     
     @classmethod
+    def get_ollama_base_url(cls) -> str:
+        """Obtém a URL base do servidor Ollama"""
+        return cls._config_manager.get_ollama_base_url()
+    
+    @classmethod
     def get_hotkey(cls) -> str:
         """Obtém o atalho de teclado para gravação"""
         return cls._config_manager.get_hotkey()
@@ -34,6 +39,11 @@ class Settings:
     def set_language(cls, language: str) -> bool:
         """Define o idioma de transcrição"""
         return cls._config_manager.set_language(language)
+    
+    @classmethod
+    def set_ollama_base_url(cls, url: str) -> bool:
+        """Define a URL base do servidor Ollama"""
+        return cls._config_manager.set_ollama_base_url(url)
     
     @classmethod
     def set_hotkey(cls, hotkey: str) -> bool:
