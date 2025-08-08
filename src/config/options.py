@@ -7,7 +7,6 @@ from typing import List
 class Choice:
     value: str
     label: str
-    description: str = ""
 
 
 class TranscriptionModel(str, Enum):
@@ -19,11 +18,11 @@ class TranscriptionModel(str, Enum):
 
 
 MODEL_CHOICES: List[Choice] = [
-    Choice("tiny", "Tiny", "Muito rápido, menos preciso"),
-    Choice("base", "Base", "Equilibrado"),
-    Choice("small", "Small", "Boa precisão"),
-    Choice("medium", "Medium", "Muito boa precisão (recomendado)"),
-    Choice("large", "Large", "Melhor precisão, mais lento"),
+    Choice("tiny", "Tiny - Muito rápido, menos preciso"),
+    Choice("base", "Base - Equilibrado"),
+    Choice("small", "Small - Boa precisão"),
+    Choice("medium", "Medium - Muito boa precisão (recomendado)"),
+    Choice("large", "Large - Melhor precisão, mais lento"),
 ]
 
 
@@ -42,10 +41,5 @@ def values(choices: List[Choice]) -> List[str]:
     return [c.value for c in choices]
 
 
-def description_for(choices: List[Choice], value: str) -> str:
-    for c in choices:
-        if c.value == value:
-            return c.description
-    return ""
 
 
