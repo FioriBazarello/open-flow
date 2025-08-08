@@ -54,6 +54,8 @@ class ConfigWindow:
     def _build_content(self, root: tk.Misc) -> None:
         main_frame = ttk.Frame(root, padding="20")
         main_frame.grid(row=0, column=0, sticky="nsew")
+        # Permite que o conteúdo dentro de main_frame expanda horizontalmente
+        main_frame.columnconfigure(0, weight=1)
 
         if isinstance(root, (tk.Tk, tk.Toplevel)):
             root.columnconfigure(0, weight=1)

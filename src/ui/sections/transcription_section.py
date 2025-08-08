@@ -26,9 +26,6 @@ class TranscriptionSection(FormSection):
         )
         model_field.grid(row=0, column=0, sticky="ew")
 
-        self._model_desc_label = ttk.Label(self.frame, text="", font=("Arial", 9), foreground="blue")
-        self._model_desc_label.grid(row=0, column=2, sticky="w", padx=(10, 0), pady=5)
-
         language_field = LabeledCombobox(
             self.frame,
             label_text="Idioma:",
@@ -37,9 +34,6 @@ class TranscriptionSection(FormSection):
             width=20,
         )
         language_field.grid(row=1, column=0, sticky="ew")
-
-        self._language_desc_label = ttk.Label(self.frame, text="", font=("Arial", 9), foreground="blue")
-        self._language_desc_label.grid(row=1, column=2, sticky="w", padx=(10, 0), pady=5)
 
         self.model_var.trace_add("write", lambda *_: self._sync_descriptions())
         self.language_var.trace_add("write", lambda *_: self._sync_descriptions())

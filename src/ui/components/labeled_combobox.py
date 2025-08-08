@@ -27,9 +27,9 @@ class LabeledCombobox:
             font=font,
         )
 
-        self.container.columnconfigure(1, weight=1)
-        self.label.grid(row=0, column=0, sticky="w", pady=5)
-        self.combobox.grid(row=0, column=1, sticky="ew", padx=(15, 0), pady=5)
+        self.container.columnconfigure(0, weight=1)
+        self.label.grid(row=0, column=0, sticky="w", pady=(0, 2))
+        self.combobox.grid(row=1, column=0, sticky="ew", pady=(0, 5))
 
     def grid(self, **kwargs) -> None:
         self.container.grid(**kwargs)
