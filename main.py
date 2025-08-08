@@ -36,7 +36,7 @@ def main():
 
     def tray_runner():
         print("🔧 Carregando system tray...")
-        system_tray = SystemTray(icon_path="resources/icons/tray_icon.png")
+        system_tray = SystemTray(icon_path="resources/icons/tray_icon.png", tk_root=feedback.root)
         system_tray.run()
 
     print("🔄 Iniciando threads do sistema...")
