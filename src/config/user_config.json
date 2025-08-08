@@ -1,5 +1,5 @@
 {
-  "model_name": "base",
+  "model_name": "medium",
   "language": "pt",
   "ollama_base_url": "http://localhost:11434",
   "hotkey": "ctrl+alt",
