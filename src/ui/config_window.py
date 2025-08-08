@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+import os
+import sys
+import subprocess
 
 from src.config.settings import Settings
 from src.ui.sections.transcription_section import TranscriptionSection
@@ -72,12 +75,13 @@ class ConfigWindow:
         self._general_section.grid(row=2, column=0, sticky="ew")
 
         button_frame = ttk.Frame(main_frame)
-        button_frame.grid(row=3, column=0, pady=(20, 0), sticky="e")
-        ttk.Button(button_frame, text="Salvar Configurações", command=self._save).pack(side=tk.LEFT, padx=(0, 10))
+        button_frame.grid(row=4, column=0, pady=(16, 0), sticky="e")
+        ttk.Button(
+            button_frame,
+            text="Aplicar e reiniciar",
+            command=self._apply_and_restart,
+        ).pack(side=tk.LEFT, padx=(0, 10))
         ttk.Button(button_frame, text="Cancelar", command=self._on_close).pack(side=tk.LEFT)
-
-        self._status_bar = StatusBar(main_frame)
-        self._status_bar.grid(row=4, column=0, sticky="ew", pady=(15, 0))
 
     def _load(self) -> None:
         if self._transcription_section is not None:
@@ -86,7 +90,12 @@ class ConfigWindow:
             self._general_section.load(Settings.get_ollama_base_url())
         self._status("Configurações carregadas com sucesso")
 
-    def _save(self) -> None:
+    def _status(self, message: str) -> None:
+        if self._status_bar is not None:
+            self._status_bar.set(message)
+
+    def _apply_and_restart(self) -> None:
+        # Persiste as alterações
         vals: dict = {}
         if self._transcription_section is not None:
             vals.update(self._transcription_section.values())
@@ -100,12 +109,22 @@ class ConfigWindow:
         if "ollama_base_url" in vals and vals["ollama_base_url"]:
             Settings.set_ollama_base_url(vals["ollama_base_url"])  # noqa: FBT003
 
-        self._status("Configurações salvas com sucesso!")
+        self._status("Configurações salvas. Reiniciando o aplicativo...")
+
+        # Fecha a janela de configurações antes do reinício
         self._on_close()
 
-    def _status(self, message: str) -> None:
-        if self._status_bar is not None:
-            self._status_bar.set(message)
+        # Reinicia o processo da aplicação
+        try:
+            if getattr(sys, "frozen", False):
+                # Executável empacotado (ex.: PyInstaller)
+                subprocess.Popen([sys.executable])
+            else:
+                # Script Python normal
+                subprocess.Popen([sys.executable, *sys.argv])
+        finally:
+            # Encerra imediatamente o processo atual
+            os._exit(0)
 
     def _on_close(self) -> None:
         if self._window is not None:
