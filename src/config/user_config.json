@@ -1,7 +1,7 @@
 {
   "model_name": "medium",
   "language": "pt",
-  "ollama_base_url": "http://localhost:11434234234",
+  "ollama_base_url": "http://localhost:1143",
   "hotkey": "ctrl+alt",
   "edit_hotkey": "ctrl+windows"
 }
