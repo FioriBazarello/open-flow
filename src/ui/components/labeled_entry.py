@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import Any
 
 
 class LabeledEntry:
@@ -14,11 +15,15 @@ class LabeledEntry:
     ) -> None:
         self.container = ttk.Frame(parent)
         self.label = ttk.Label(self.container, text=label_text, font=("Arial", 10, "bold"))
-        self.entry = ttk.Entry(self.container, width=width, font=font, show=show)
+        entry_kwargs: dict[str, Any] = {"width": width, "font": font}
+        if show is not None:
+            entry_kwargs["show"] = show
+        self.entry = ttk.Entry(self.container, **entry_kwargs)
 
-        self.container.columnconfigure(1, weight=1)
-        self.label.grid(row=0, column=0, sticky="w", pady=5)
-        self.entry.grid(row=0, column=1, sticky="ew", padx=(15, 0), pady=5)
+        # Layout vertical (label acima do campo), alinhado ao comportamento do LabeledCombobox
+        self.container.columnconfigure(0, weight=1)
+        self.label.grid(row=0, column=0, sticky="w", pady=(0, 2))
+        self.entry.grid(row=1, column=0, sticky="ew", pady=(0, 5))
 
     def grid(self, **kwargs) -> None:
         self.container.grid(**kwargs)
